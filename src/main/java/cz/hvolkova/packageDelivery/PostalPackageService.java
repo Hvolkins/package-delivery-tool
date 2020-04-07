@@ -2,10 +2,7 @@ package cz.hvolkova.packageDelivery;
 
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -40,15 +37,43 @@ public class PostalPackageService {
      * Saving the package
      * @param newPackage
      */
-    public void save(final PostalPackage newPackage) {
+    public PostalPackage save(final PostalPackage newPackage) {
         if (null != newPackage) {
-            newPackage.setId(pcgKeySequence.getAndIncrement());
 
-            // Control if fees are imported and recount fees od packages, saved in HashMap
-            if (!feesInMemory.isEmpty())
-                newPackage.setFee(count(newPackage.getWeight()));
+            if (isExistPostalCode(newPackage.getPostalCode()))
+                update(newPackage);
+            else {
+                newPackage.setId(pcgKeySequence.getAndIncrement());
+                // Control if fees are imported and recount fees od packages, saved in HashMap
+                if (!feesInMemory.isEmpty())
+                    newPackage.setFee(count(newPackage.getWeight()));
 
-            packagesInMemory.put(newPackage.getId(), newPackage);
+                packagesInMemory.put(newPackage.getId(), newPackage);
+            }
+        }
+        return newPackage;
+    }
+
+    /**
+     * Control if in HashMap exists package with
+     *
+     * @param postalCode
+     * @return
+     */
+    private boolean isExistPostalCode(Integer postalCode) {
+        Long pcgCount = getAllPackages().stream().filter(v -> postalCode.equals(v.getPostalCode())).count();
+        return pcgCount > 0 ? true: false;
+    }
+
+    private void update(PostalPackage postalPackage) {
+        List<PostalPackage> all = getAllPackages();
+        if (null != postalPackage && !all.isEmpty()) {
+             for (PostalPackage p: all) {
+                 if (p.getPostalCode().equals(postalPackage.getPostalCode())) {
+                     Double weight = p.getWeight() + postalPackage.getWeight();
+                     p.setWeight(weight);
+                 }
+             }
         }
     }
 
@@ -91,10 +116,15 @@ public class PostalPackageService {
     public void printPackageInfo(PostalPackage postPackage, boolean allPackages) {
         String info = allPackages ? "" : "Added package: ";
 
-        if (feesInMemory.isEmpty())
-            System.out.format(info + "%s %.3f", postPackage.getPostCode(), postPackage.getWeight()).println();
-        else
-            System.out.format(info + "%s %.3f %.2f", postPackage.getPostCode(), postPackage.getWeight(), postPackage.getFee()).println();
+        String postalCode = String.format(Locale.US, "%s", postPackage.getPostalCode());
+        String weight = String.format(Locale.US, "%.3f", postPackage.getWeight());
+
+        if (feesInMemory.isEmpty()) {
+            System.out.println(info + postalCode +" "+weight);
+        } else {
+            String fee = String.format(Locale.US, "%.2f", postPackage.getFee());
+            System.out.println(info + postalCode +" "+weight+" "+fee);
+        }
     }
 
     /**

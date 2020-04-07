@@ -119,13 +119,10 @@ public class PackageDeliveryConsoleApplication implements CommandLineRunner {
 		System.out.print("Enter package (<weight> <postal code>): ");
 		// Package validation
 		PostalPackage pcg = helper.valid(scanner);
-
-		//PostalPackage pcg = helper.validation(scanner);
-
 		// Package saving in memory
-		packageService.save(pcg);
+		PostalPackage savedPcg = packageService.save(pcg);
 		// Print to console info about added package
-		packageService.printPackageInfo(pcg, false);
+		packageService.printPackageInfo(savedPcg, false);
 	}
 
 	/**

@@ -13,7 +13,7 @@ import java.util.stream.Stream;
  * @author Elena Hvolková
  */
 public class FileUtil {
-    private static final String FILE_INPUT = "input.txt";
+    private static final String FILE_INPUT = "/target/resources/input.txt";
     private static final String FILE_FEES = "fees.txt";
 
     /**
@@ -24,10 +24,10 @@ public class FileUtil {
      * @see PostalPackage
      */
     public List<PostalPackage> readInitialFile(Scanner scanner) {
-        System.out.println("File input path: " + getClass().getClassLoader().getResource(FILE_INPUT).getPath());
-        String fileName = getClass().getClassLoader().getResource(FILE_INPUT).getFile();
+        System.out.println("Enter the file name with path:");
+        String name = scanner.nextLine();
 
-        File file = new File(fileName);
+        File file = new File(name);
         System.out.println("File exist - " + file.exists());
 
         List<PostalPackage> list = new ArrayList<>();
@@ -66,9 +66,11 @@ public class FileUtil {
      * @see Fee
      */
     public List<Fee> readFeesFromFile(Scanner scanner) {
-        System.out.println("File fees path: " + getClass().getClassLoader().getResource(FILE_FEES).getPath());
-        String fileName = getClass().getClassLoader().getResource(FILE_FEES).getFile();
-        File file = new File(fileName);
+        System.out.println("Enter the file name with path:");
+        String name = scanner.nextLine();
+
+        File file = new File(name);
+        System.out.println("File exist - " + file.exists());
 
         List<Fee> list = new ArrayList<>();
 

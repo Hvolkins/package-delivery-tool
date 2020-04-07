@@ -14,10 +14,10 @@ public class PostalPackage {
     private Long id;
     private Double weight;
     private Double fee;
-    private Integer postCode;
+    private Integer postalCode;
 
-    public PostalPackage(Double weight, Integer postCode) {
+    public PostalPackage(Double weight, Integer postalCode) {
         this.weight = weight;
-        this.postCode = postCode;
+        this.postalCode = postalCode;
     }
 }
